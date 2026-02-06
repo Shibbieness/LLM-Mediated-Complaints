@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LLM_Mediated_Complaint",
+  "type": "object",
+  "required": [
+    "complaint_id",
+    "reported_at",
+    "status",
+    "primary_category",
+    "severity",
+    "user_intent",
+    "observed_outcome",
+    "expected_outcome",
+    "confidence"
+  ],
+  "properties": {
+    "complaint_id": {
+      "type": "string",
+      "pattern": "^CMP-\\d{4}-\\d{2}-\\d{2}-[A-Z0-9]{6}$",
+      "description": "Unique identifier following format CMP-YYYY-MM-DD-XXXXXX"
+    },
+    "reported_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when complaint was filed"
+    },
+    "incident_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the actual incident occurred"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "triaged",
+        "structured",
+        "clustered",
+        "routed",
+        "in_progress",
+        "awaiting_user",
+        "resolved",
+        "closed",
+        "reopened"
+      ]
+    },
+    "user_summary": {
+      "type": ["string", "null"],
+      "maxLength": 2000,
+      "description": "User's own description in their words"
+    },
+    "primary_category": {
+      "type": "string",
+      "enum": [
+        "bug",
+        "model_behavior",
+        "ux_ui",
+        "feature_request",
+        "policy_friction",
+        "performance",
+        "trust_safety",
+        "misunderstanding",
+        "other"
+      ]
+    },
+    "secondary_categories": {
+      "type": "array",
+      "items": {"type": "string"},
+      "maxItems": 5,
+      "description": "Additional relevant categorizations"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "severity_basis": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Reasoning for severity assignment"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": ["once", "intermittent", "persistent", "unknown"]
+    },
+    "user_intent": {
+      "type": "string",
+      "description": "What the user was trying to accomplish"
+    },
+    "observed_outcome": {
+      "type": "string",
+      "description": "What actually happened"
+    },
+    "expected_outcome": {
+      "type": "string",
+      "description": "What the user expected to happen"
+    },
+    "context": {
+      "type": ["string", "null"],
+      "description": "Relevant environment, prior steps, constraints"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text", "screenshot", "log", "link"]
+          },
+          "content": {"type": "string"}
+        },
+        "required": ["type", "content"]
+      }
+    },
+    "probable_root_causes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "constraint_parsing_failure",
+          "context_overload",
+          "ambiguous_instructions",
+          "model_overcorrection",
+          "system_bug",
+          "latency_issue",
+          "ui_confusion",
+          "policy_boundary",
+          "hallucination",
+          "data_absence",
+          "unknown"
+        ]
+      }
+    },
+    "related_complaints": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "IDs of similar or related complaints"
+    },
+    "routing_target": {
+      "type": ["string", "null"],
+      "enum": [
+        "self_correction",
+        "human_review",
+        "product_backlog",
+        "safety_escalation",
+        "documentation_update",
+        "none"
+      ]
+    },
+    "suggested_fix": {
+      "type": ["string", "null"],
+      "description": "System-generated proposed solution"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "LLM confidence in classification accuracy"
+    },
+    "audit_trail": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {"type": "string", "format": "date-time"},
+          "actor": {"type": "string"},
+          "action": {"type": "string"}
+        },
+        "required": ["timestamp", "actor", "action"]
+      }
+    }
+  }
+}
